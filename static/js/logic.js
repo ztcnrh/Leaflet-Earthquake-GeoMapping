@@ -15,16 +15,24 @@ function getColor(d) {
 
 
 urlEarthquakes = "https://earthquake.usgs.gov/earthquakes/feed/v1.0/summary/all_week.geojson";
+pathTectonicPlates = "static/data/PB2002_plates.json"
 
+// Perform an API call to the USGS GeoJSON feed to retrieve data for all earthquakes in the past 7 days
 d3.json(urlEarthquakes).then(function(dataEq) {
-    // Once we get a response, send the features object to the createCircles() function
-    createCircles(dataEq.features);
+
+    // When the first API call is complete, pull in the earth tectonic plates dataset from the "data" folder
+    d3.json(pathTectonicPlates).then(function(dataPlates) {
+        // Once we get a response, send both the earthquake features object and the tectonic plates data to the createFeatures() function
+        createFeatures(dataEq.features, dataPlates);
+    })
+})
+.catch(function(error) {
+    console.log(error);
 });
 
-// ------------------------------------------------------------
-// ------------------------------------------------------------
 
-function createCircles(featuresEq) {
+// Function to create features to be later added to the map
+function createFeatures(featuresEq, dataPlates) {
 
     // Define an array to hold earthquake coordinates
     var earthquakeCircles = [];
@@ -37,23 +45,39 @@ function createCircles(featuresEq) {
             L.circle([coordinates[1], coordinates[0]], {
                 weight: 0.5,
                 opacity: 0.5,
-                fillOpacity: 0.7,
+                fillOpacity: 0.6,
                 color: "#4169E1",
                 fillColor: getColor(coordinates[2]),
                 radius: circleSize(featuresEq[i].properties.mag)
             })
-        )
+            .bindPopup("<h4>" + featuresEq[i].properties.place + "</h4><hr>"
+                + "<p>Magnitude: " + featuresEq[i].properties.mag + "</p> "
+                + "<p>Time: " + moment(featuresEq[i].properties.time).format("MM/DD/YYYY hh:mm A") + "</p>")
+        );
     }
 
     // Group the circle objects array into a layer group
     var earthquakesLayer = L.layerGroup(earthquakeCircles);
 
-    // Pass the layer group to the createMap() function
-    createMap(earthquakesLayer);
+    // Set a style object to customize rendered plates polyons
+    var platesStyle = {
+        color: "#DDA0DD",
+        fill: false,
+        opacity: 0.9,
+        weight: 1.3
+    };
+
+    // Creating a geoJSON layer with the retrieved data
+    var platesLayer = L.geoJson(dataPlates, {
+        style: platesStyle
+    })
+
+    // Pass the layer groups to the createMap() function
+    createMap(earthquakesLayer, platesLayer);
 }
 
-
-function createMap(earthquakesLayer) {
+// Function to create the map
+function createMap(earthquakesLayer, platesLayer) {
 
     // Base layers to choose from
     var satelliteMap = L.tileLayer("https://api.mapbox.com/styles/v1/mapbox/{id}/tiles/{z}/{x}/{y}?access_token={accessToken}", {
@@ -86,15 +110,15 @@ function createMap(earthquakesLayer) {
 
     // Create an overlayMaps object
     var overlayMaps = {
-    //   "State Population": states,
-    "Earthquakes": earthquakesLayer
+        "Earthquakes": earthquakesLayer,
+        "Tectonic Plates": platesLayer
     };
 
     // Define a map object
     var myMap = L.map("map", {
-        center: [49.28, -123.12], //Vancouver, BC geo coordinates
+        center: [49.28, -123.12], //Vancouver, BC, Canada coordinates
         zoom: 4,
-        layers: [satelliteMap, earthquakesLayer]
+        layers: [satelliteMap, earthquakesLayer, platesLayer]
     });
 
     // Add layer control to the map
