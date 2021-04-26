@@ -53,6 +53,7 @@ function createFeatures(featuresEq, dataPlates) {
             })
             .bindPopup("<h4>" + featuresEq[i].properties.place + "</h4><hr>"
                 + "<p>Magnitude: " + featuresEq[i].properties.mag + "</p> "
+                + "<p>Earthquake Depth: " + coordinates[2] + "</p> "
                 + "<p>Time: " + moment(featuresEq[i].properties.time).format("MM/DD/YYYY hh:mm A") + "</p>")
         );
     }
@@ -143,7 +144,7 @@ function createMap(earthquakesLayer, platesLayer) {
     
         return div;
     }
-    
+
     // Add legend to the map
     legend.addTo(myMap);
 }
