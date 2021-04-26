@@ -1,6 +1,6 @@
 # Leaflet-Earthquake-GeoMapping
 
-Penn Data Boot Camp Assignment 17 - Interactive map to visualize an USGS earthquake dataset (GeoJSON) using Leaflet for JavaScript.
+Penn Data Boot Camp Assignment 17 - Interactive map to visualize a USGS earthquake dataset (GeoJSON) using Leaflet for JavaScript.
 
 ## Background
 
