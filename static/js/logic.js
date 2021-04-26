@@ -36,10 +36,10 @@ function createCircles(featuresEq) {
         earthquakeCircles.push(
             L.circle([coordinates[1], coordinates[0]], {
                 weight: 0.5,
-                opacity: 0.3,
+                opacity: 0.5,
                 fillOpacity: 0.7,
-                color: "black",
-                fillColor: "green",
+                color: "#4169E1",
+                fillColor: getColor(coordinates[2]),
                 radius: circleSize(featuresEq[i].properties.mag)
             })
         )
@@ -92,8 +92,7 @@ function createMap(earthquakesLayer) {
 
     // Define a map object
     var myMap = L.map("map", {
-        // center: [39.55, -105.78],
-        center: [47.61, -122.33], //Seattle, WA geo coordinates
+        center: [49.28, -123.12], //Vancouver, BC geo coordinates
         zoom: 4,
         layers: [satelliteMap, earthquakesLayer]
     });
