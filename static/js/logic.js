@@ -1,4 +1,4 @@
-// Function to scale circle radius to our desired circle size based on earthquake magnitude
+// Function to scale circle radius to our desired circle sizes based on earthquake magnitude
 function circleSize(magnitude) {
     return magnitude * 20000;
 }
@@ -13,16 +13,16 @@ function getColor(d) {
                       '#47ce25';
 }
 
-
+// Paths to get our data
 urlEarthquakes = "https://earthquake.usgs.gov/earthquakes/feed/v1.0/summary/all_week.geojson";
 pathTectonicPlates = "static/data/PB2002_plates.json"
 
 // Perform an API call to the USGS GeoJSON feed to retrieve data for all earthquakes in the past 7 days
 d3.json(urlEarthquakes).then(function(dataEq) {
 
-    // When the first API call is complete, pull in the earth tectonic plates dataset from the "data" folder
+    // When the first API call is completed, pull in the earth tectonic plates dataset from the "data" folder
     d3.json(pathTectonicPlates).then(function(dataPlates) {
-        // Once we get a response, send both the earthquake features object and the tectonic plates data to the createFeatures() function
+        // Once we get the responses, send both the earthquake features object and the tectonic plates data to the createFeatures() function
         createFeatures(dataEq.features, dataPlates);
     })
 })
@@ -37,6 +37,7 @@ function createFeatures(featuresEq, dataPlates) {
     // Define an array to hold earthquake coordinates
     var earthquakeCircles = [];
     
+    // Loop through each feature to locate circles, apply customized stylings, and bind popup windows
     for (var i = 0; i < featuresEq.length; i++) {
         
         var coordinates = featuresEq[i].geometry.coordinates
@@ -44,8 +45,8 @@ function createFeatures(featuresEq, dataPlates) {
         earthquakeCircles.push(
             L.circle([coordinates[1], coordinates[0]], {
                 weight: 0.5,
-                opacity: 0.5,
-                fillOpacity: 0.6,
+                opacity: 0.4,
+                fillOpacity: 0.7,
                 color: "#4169E1",
                 fillColor: getColor(coordinates[2]),
                 radius: circleSize(featuresEq[i].properties.mag)
@@ -59,12 +60,12 @@ function createFeatures(featuresEq, dataPlates) {
     // Group the circle objects array into a layer group
     var earthquakesLayer = L.layerGroup(earthquakeCircles);
 
-    // Set a style object to customize rendered plates polyons
+    // Set a style object to customize plates polyons
     var platesStyle = {
-        color: "#DDA0DD",
+        color: "#DA70D6",
         fill: false,
         opacity: 0.9,
-        weight: 1.3
+        weight: 1.5
     };
 
     // Creating a geoJSON layer with the retrieved data
@@ -114,7 +115,7 @@ function createMap(earthquakesLayer, platesLayer) {
         "Tectonic Plates": platesLayer
     };
 
-    // Define a map object
+    // Define a map object with default layer options
     var myMap = L.map("map", {
         center: [49.28, -123.12], //Vancouver, BC, Canada coordinates
         zoom: 4,
@@ -133,7 +134,7 @@ function createMap(earthquakesLayer, platesLayer) {
         var div = L.DomUtil.create('div', 'info legend'),
             depth = [-10, 10, 30, 50, 70, 90]
     
-        // Loop through our density intervals (depth) and generate a label with a colored square for each interval
+        // Loop through our density intervals (depths) and generate a label with a colored square for each interval
         for (var i = 0; i < depth.length; i++) {
             div.innerHTML +=
                 '<i style="background:' + getColor(depth[i] + 1) + '"></i> ' +
@@ -143,5 +144,6 @@ function createMap(earthquakesLayer, platesLayer) {
         return div;
     }
     
+    // Add legend to the map
     legend.addTo(myMap);
 }
