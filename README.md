@@ -20,3 +20,9 @@ Using USGS' GeoJSON Feed, the ["All Earthquakes from the Past 7 Days"](https://e
 
 **United States West Coast Highlight:**
 ![Default View](image_highlights/outdoors+zoomed.png)
+
+<br>
+
+### Note:
+
+If you would like to fork this project and deploy this mini application, create a "config.js" file within folder "static/js/" (_"static/js/config.js"_). In the file define a "API_KEY" variable which will be a placeholder for your personal API to an online mapping provider such as Mapbox.
